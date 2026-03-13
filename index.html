@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engineer Johan_nlb - Clock</title>
+    <style>
+        /* Define our color palettes using CSS variables */
+        :root {
+            --bg-color: #1a1a1c;
+            --text-color: #e0e0e0;
+            --clock-bg: #252527;
+            --clock-border: #333336;
+            --hand-color: #d1d1d1;
+            --accent-color: #ff5252; /* A nice red for the second hand */
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Light mode palette overrides */
+        body.light-mode {
+            --bg-color: #f4f4f6;
+            --text-color: #2a2a2c;
+            --clock-bg: #ffffff;
+            --clock-border: #e0e0e0;
+            --hand-color: #222222;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Top Toggle Button */
+        #theme-toggle {
+            position: absolute;
+            top: 30px;
+            background-color: transparent;
+            color: var(--text-color);
+            border: 2px solid var(--clock-border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: inherit;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #theme-toggle:hover {
+            background-color: var(--text-color);
+            color: var(--bg-color);
+        }
+
+        /* The Clock Face */
+        .clock {
+            width: 300px;
+            height: 300px;
+            background-color: var(--clock-bg);
+            border: 8px solid var(--clock-border);
+            border-radius: 50%;
+            position: relative;
+            box-shadow: var(--shadow);
+            transition: all 0.4s ease;
+        }
+
+        /* Clock Hands Base Style */
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom;
+            background-color: var(--hand-color);
+            border-radius: 10px;
+            /* translateX(-50%) keeps the hand perfectly centered */
+            transform: translateX(-50%) rotate(0deg); 
+            transition: background-color 0.4s ease;
+        }
+
+        .hour { width: 6px; height: 80px; z-index: 1; }
+        .minute { width: 4px; height: 110px; z-index: 2; }
+        
+        .second { 
+            width: 2px; 
+            height: 125px; 
+            background-color: var(--accent-color); 
+            z-index: 3; 
+        }
+
+        /* Center Pin */
+        .center-dot {
+            width: 14px;
+            height: 14px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 4;
+        }
+
+        /* Bottom Text */
+        .name-plate {
+            margin-top: 100px;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="theme-toggle">☀️ Switch to Light</button>
+
+    <div class="clock">
+        <div class="hand hour" id="hour"></div>
+        <div class="hand minute" id="minute"></div>
+        <div class="hand second" id="second"></div>
+        <div class="center-dot"></div>
+    </div>
+
+    <div class="name-plate">Engineered by Johan nlb <br> aka Jin Kaneki <br>John Cohen <br> :) </div>
+    <div> 
+        <p>All things serve the beam! </p>
+        <p>"The wheel of time turns, Ages come and pass, leaving memories that become legend.<br>
+            Legend fades to myth, and even myth is long forgotten when the Age that gave it birth comes again."
+        </p>
+    </div>
+
+    <script>
+        // Grab the elements from the DOM
+        const hourHand = document.getElementById('hour');
+        const minuteHand = document.getElementById('minute');
+        const secondHand = document.getElementById('second');
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        // Function to handle the dark/light mode switch
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                themeToggle.innerText = '🌙 Switch to Dark';
+            } else {
+                themeToggle.innerText = '☀️ Switch to Light';
+            }
+        });
+
+        // Function to update the clock hands
+        function updateClock() {
+            const currentDate = new Date();
+            
+            // Calculate the rotation ratios
+            const secondsRatio = currentDate.getSeconds() / 60;
+            const minutesRatio = (secondsRatio + currentDate.getMinutes()) / 60;
+            const hoursRatio = (minutesRatio + currentDate.getHours()) / 12;
+
+            // Apply the rotations (keeping the -50% translation so they stay centered)
+            secondHand.style.transform = `translateX(-50%) rotate(${secondsRatio * 360}deg)`;
+            minuteHand.style.transform = `translateX(-50%) rotate(${minutesRatio * 360}deg)`;
+            hourHand.style.transform = `translateX(-50%) rotate(${hoursRatio * 360}deg)`;
+        }
+
+        // Run the clock update every 1000 milliseconds (1 second)
+        setInterval(updateClock, 1000);
+        
+        // Call it immediately once so we don't wait 1 second for the hands to jump into place
+        updateClock();
+    </script>
+</body>
+</html>
